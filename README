@@ -1,0 +1,7 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=1409
+
+I didn't find a syntax file for the network description language of the OMNeT++ network simulator. Its files are called *.ned.
+
+This syntax file just does basic highlighting and doesn't know any regions or areas. I will maybe change this when I learned how to do it ;)
+
+If somebody has a better syntax file for this filetype, please tell me!
