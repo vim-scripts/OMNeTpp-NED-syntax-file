@@ -2,8 +2,8 @@
 " Language:	Omnet++ NED
 " Maintainer:	Timo Teifel <timo@teifel-net.de>
 " URL:          www.teifel.net/projects/vim
-" Last Change:	2005 Nov 25
-" Version:      0.1
+" Last Change:	November 28, 2005
+" Version:      0.2
 " Released under the terms of the GNU/GPL licence v2
 "
 " Very basic syntax file for NED files by OMNeT++
@@ -12,14 +12,22 @@
 
 if version < 600
   syntax clear
+elseif exists("b:current_syntax")
+  finish
 endif
 
-syn match nedValidTimeUnits     "[0-9]ns"hs=s+1 
-syn match nedValidTimeUnits     "[0-9]m"hs=s+1
-syn match nedValidTimeUnits     "[0-9]ms"hs=s+1
-syn match nedValidTimeUnits     "[0-9]s"hs=s+1 
-syn match nedValidTimeUnits     "[0-9]h"hs=s+1
-syn match nedValidTimeUnits     "[0-9]d"hs=s+1
+syntax case match
+
+syn match nedValidNumber        "\d\+" nextgroup=nedValidTimeUnits skipwhite
+syn match nedValidNumber        "\d\+\.\d\+" nextgroup=nedValidTimeUnits skipwhite
+syn match nedValidNumber        "\d*\.\d\+" nextgroup=nedValidTimeUnits skipwhite
+
+syn match nedValidTimeUnits     "ns" 
+syn match nedValidTimeUnits     "m"
+syn match nedValidTimeUnits     "ms"
+syn match nedValidTimeUnits     "s"
+syn match nedValidTimeUnits     "h"
+syn match nedValidTimeUnits     "d"
 
 syn keyword nedConditional      if
 syn keyword nedInclude          import
@@ -41,29 +49,47 @@ syn keyword nedNetwork          network endnetwork
 syn match nedSimpleDefinition   "parameters:"he=e-1
 syn match nedSimpleDefinition   "gates:"he=e-1
 
-syn match nedGateOptions        "in:"he=e-1
-syn match nedGateOptions        "out:"he=e-1
+"syn region nedGates              start="gates:" end="endsimple" contains=nedGateOptions
+syn match nedGateOptions        "in:"he=e-1 " contained
+syn match nedGateOptions        "out:"he=e-1 " contained
 
-syn region nedString		start=/"/ end=/"/
-syn keyword nedReservedWords    connections gatesizes nocheck ref ancestor like input  xmldoc
+syn region nedString		    start=/"/ skip=/\\"/ end=/"/
+syn keyword nedReservedWords    connections gatesizes nocheck ref ancestor like input  
+syn keyword nedFunctions        xmldoc sizeof uniform exponential normal truncnormal
+syn keyword nedFunctions        gamma_d beta erlang_k chi_square student_t cauchy
+syn keyword nedFunctions        triang lognormal weibull pareto_shifted intuniform
+syn keyword nedFunctions        bernoulli binomial geometric negbinomial poisson
 
-hi def link nedComment                     Comment
-hi def link nedConditional                 Conditional
-hi def link nedRepeat                      Repeat
-hi def link nedIdentifier                  Identifier
-hi def link nedValidTimeUnits              Constant
-hi def link nedInclude                     Include
-hi def link nedType                        Type
-hi def link nedBoolean                     Boolean
-hi def link nedChannel                     Keyword
-hi def link nedChannelOptions              Keyword
-hi def link nedSimple                      Keyword
-hi def link nedSimpleDefinition            Keyword
-hi def link nedGateOptions                 Keyword
-hi def link nedString                      String
-hi def link nedModule                      Keyword
-hi def link nedSubModules                  Keyword
-hi def link nedModuleOptions               Keyword
-hi def link nedNetwork                     Keyword
-hi def link nedEndNetwork                  Keyword
-hi def link nedReservedWords               Keyword
+if version >= 508 || !exists("did_ned_syn_inits")
+    if version < 508
+      let did_ned_syn_inits = 1
+      command -nargs=+ HiLink hi link <args>
+    else
+      command -nargs=+ HiLink hi def link <args>
+    endif
+    HiLink nedComment                     Comment
+    HiLink nedConditional                 Conditional
+    HiLink nedRepeat                      Repeat
+    HiLink nedIdentifier                  Identifier
+    HiLink nedValidTimeUnits              Constant
+    HiLink nedValidNumber                 Number
+    HiLink nedInclude                     Include
+    HiLink nedType                        Type
+    HiLink nedBoolean                     Boolean
+    HiLink nedChannel                     Keyword
+    HiLink nedChannelOptions              Keyword
+    HiLink nedSimple                      Keyword
+    HiLink nedSimpleDefinition            Keyword
+    HiLink nedGateOptions                 Keyword
+    HiLink nedString                      String
+    HiLink nedModule                      Keyword
+    HiLink nedSubModules                  Keyword
+    HiLink nedModuleOptions               Keyword
+    HiLink nedNetwork                     Keyword
+    HiLink nedEndNetwork                  Keyword
+    HiLink nedReservedWords               Keyword
+    HiLink nedFunctions                   Keyword
+    delcommand HiLink
+endif
+
+let b:current_syntax = "ned"
